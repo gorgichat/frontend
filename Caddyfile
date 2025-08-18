@@ -1,0 +1,10 @@
+:80, :443, :8080 {
+    root * /usr/share/caddy
+    file_server
+
+    handle_path /api/* {
+        reverse_proxy backend:8080
+    }
+
+    encode gzip
+}

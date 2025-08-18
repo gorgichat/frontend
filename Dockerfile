@@ -19,6 +19,9 @@ WORKDIR /usr/share/caddy
 # copy built files into Caddy web root
 COPY --from=build /usr/src/app/dist ./ 
 
+# add Caddyfile to configuration path
+COPY Caddyfile /etc/caddy/Caddyfile
+
 # caddy automatically serves ./ on :8080
-EXPOSE 80
+EXPOSE 80 8080 443
 CMD ["caddy", "file-server", "--root", ".", "--listen", ":8080"]
