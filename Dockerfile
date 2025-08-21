@@ -12,16 +12,25 @@ COPY . .
 # build React app into dist/
 RUN bun build ./src/index.html --outdir=dist --sourcemap --target=browser --minify
 
+# ---------- Builder Stage ----------
+FROM caddy:builder AS builder
+
+RUN xcaddy build --with github.com/corazawaf/coraza-caddy/v2
+
 # ---------- Runtime Stage ----------
 FROM caddy:latest AS release
 WORKDIR /usr/share/caddy
 
-# copy built files into Caddy web root
+# Copy built Caddy binary (Coraza dahil)
+COPY --from=builder /usr/bin/caddy /usr/bin/caddy
+
+# Copy frontend files & configs
 COPY --from=build /usr/src/app/dist ./ 
-
-# add Caddyfile to configuration path
 COPY Caddyfile /etc/caddy/Caddyfile
+COPY ./coraza /etc/coraza/rules
 
-# caddy automatically serves ./ on :8080
+# Format Caddyfile
+RUN caddy fmt --overwrite /etc/caddy/Caddyfile
+
 EXPOSE 80 8080 443
 CMD ["caddy", "file-server", "--root", ".", "--listen", ":8080"]

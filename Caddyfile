@@ -1,10 +1,18 @@
-:80, :443, :8080 {
-    root * /usr/share/caddy
-    file_server
+{
+    order coraza_waf first
+}
 
-    handle_path /api/* {
-        reverse_proxy backend:8080
+:80, :443 {
+    coraza_waf {
+        directives `
+            SecAction "id:1,pass,log"
+            SecRule REQUEST_URI "/test" "id:2,deny,log,phase:1"
+			SecRuleEngine On
+        `
+        include /etc/coraza/rules/coraza.conf-recommended
+        include /etc/coraza/rules/crs-setup.conf
+        include /etc/coraza/rules/*.conf
     }
 
-    encode gzip
+    reverse_proxy backend:8080
 }
