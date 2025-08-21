@@ -14,14 +14,13 @@ RUN bun build ./src/index.html --outdir=dist --sourcemap --target=browser --mini
 
 # ---------- Builder Stage ----------
 FROM caddy:builder AS builder
-
 RUN xcaddy build --with github.com/corazawaf/coraza-caddy/v2
 
 # ---------- Runtime Stage ----------
 FROM caddy:latest AS release
 WORKDIR /usr/share/caddy
 
-# Copy built Caddy binary (Coraza dahil)
+# Copy built Caddy binary (Coraza included)
 COPY --from=builder /usr/bin/caddy /usr/bin/caddy
 
 # Copy frontend files & configs

@@ -30,5 +30,6 @@ export default tseslint.config({
   // Custom rule overrides (modify rule levels or disable rules)
   rules: {
     "@eslint-react/no-missing-key": "warn",
+	"@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
   },
 });
